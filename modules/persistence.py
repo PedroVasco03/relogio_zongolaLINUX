@@ -50,6 +50,7 @@ def load_config() -> dict:
             # merge with defaults for missing keys
             for k, v in _CONFIG_DEFAULTS.items():
                 data.setdefault(k, v)
+            _deserialize_dates(data)
             return data
         except Exception:
             pass
@@ -57,7 +58,29 @@ def load_config() -> dict:
 
 def save_config(cfg: dict):
     p = _config_dir() / "config.json"
-    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2))
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2, default=_json_default))
+
+
+def _json_default(obj):
+    """Serializa objectos date/datetime para string ISO."""
+    from datetime import date, datetime
+    if isinstance(obj, (date, datetime)):
+        return obj.isoformat()
+    raise TypeError(f"Tipo não serializável: {type(obj)}")
+
+
+def _deserialize_dates(cfg: dict):
+    """Converte strings ISO de volta para date nos jogos do Mundial guardados."""
+    from datetime import date as _date
+    games = cfg.get("world_cup_games")
+    if isinstance(games, dict):
+        for g in games.values():
+            d = g.get("date")
+            if isinstance(d, str):
+                try:
+                    g["date"] = _date.fromisoformat(d)
+                except ValueError:
+                    pass
 
 # ── alarms.json ──────────────────────────────────────────────────────────────
 def load_alarms() -> list:

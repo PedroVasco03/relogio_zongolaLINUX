@@ -189,7 +189,7 @@ class AlarmsTab(tk.Frame):
 
         return card
 
-    # ── Dialogo Novo/Editar ───────────────────────────────────────────────────
+   
     def _new_alarm_dialog(self, alarm=None):
         p = self.palette
         editing = alarm is not None
@@ -205,7 +205,7 @@ class AlarmsTab(tk.Frame):
         time_row = tk.Frame(dlg, bg=p["bg"])
         time_row.pack()
 
-        # 🔥 CORREÇÃO AQUI: Captura o horário exato do sistema para novos alarmes
+        
         now_time = datetime.now()
         h_var = tk.IntVar(value=alarm["hour"] if editing else now_time.hour)
         m_var = tk.IntVar(value=alarm["minute"] if editing else now_time.minute)

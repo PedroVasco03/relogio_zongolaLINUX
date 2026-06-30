@@ -2,7 +2,6 @@
 """
 Relógio Zongola — Aplicação Desktop Linux
 Sistema Operativo Zongola | Universidade Metodista de Angola
-Grupo: Ademar, Domingos, José L., José J., Jonhy, Messias, Oliveira, Pedro, Tomás
 """
 
 import tkinter as tk
@@ -21,6 +20,7 @@ from modules.alarms    import AlarmsTab
 from modules.stopwatch import StopwatchTab
 from modules.timers    import TimersTab
 from modules.world_clock import WorldClockTab
+from modules.world_cup   import WorldCupTab
 from modules.settings  import SettingsPanel
 from modules.sound     import play as play_sound, stop_all as stop_sound
 
@@ -37,7 +37,6 @@ class RelogioZongola(tk.Tk):
         self._cfg     = DB.load_config()
         self._alarms  = DB.load_alarms()
         self._profiles= DB.load_timer_profiles()
-
         TH.set_palette(self._cfg.get("palette", "samakaka_classico"))
         p = TH.get_palette()
 
@@ -47,7 +46,7 @@ class RelogioZongola(tk.Tk):
         self.minsize(820, 560)
         self.configure(bg=p["bg"])
 
-        # Ícone (emoji fallback)
+        
         try:
             self.iconbitmap("")
         except Exception:
@@ -152,7 +151,7 @@ class RelogioZongola(tk.Tk):
             on_save=self._save_alarms,
             root_ref=self
         )
-        self._nb.add(self._tab_alarms, text="⏰  Alarmes")
+        self._nb.add(self._tab_alarms, text="⏰  Alarme")
 
         # Cronómetro
         self._tab_sw = StopwatchTab(self._nb, p)
@@ -164,16 +163,22 @@ class RelogioZongola(tk.Tk):
             on_save=self._save_profiles,
             root_ref=self
         )
-        self._nb.add(self._tab_timers, text="⏳  Temporizadores")
+        self._nb.add(self._tab_timers, text="⏳  Temporizador")
 
         # Relógio Mundial
         self._tab_world = WorldClockTab(
             self._nb, p, self._cfg,
             on_save=self._save_config
         )
-        self._nb.add(self._tab_world, text="🌍  Mundial")
+        self._nb.add(self._tab_world, text="🌍 Relógio Mundial")
 
-    # ── Tick principal (relógio) ───────────────────────────────────────────────
+        self._tab_wcup = WorldCupTab(
+            self._nb, p, self._cfg,
+            on_save=self._save_config,
+            root_ref=self
+        )
+        self._nb.add(self._tab_wcup, text="⚽ Mundial — Jogos")
+    
     def _tick(self):
         now   = datetime.now()
         fmt   = self._cfg.get("time_format", "24h")
@@ -185,7 +190,7 @@ class RelogioZongola(tk.Tk):
             time_str = now.strftime("%H:%M:%S" if show_s else "%H:%M")
 
         DAYS_PT = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
-        # CORRIGIDO: Removido o 'decay' intruso de dentro das chaves
+        
         date_str = f"{DAYS_PT[now.weekday()]}, {now.strftime('%d/%m/%Y')}"
 
         self._time_var.set(time_str)
@@ -218,7 +223,7 @@ class RelogioZongola(tk.Tk):
         c.itemconfig(self._logo_id, anchor="s")
 
         # Relógio analógico centrado
-        digital_h = 70   # espaço reservado para display digital no topo
+        digital_h = 70  
         logo_h    = 24
         avail_h   = ht - digital_h - logo_h
         cx = w // 2
@@ -269,7 +274,7 @@ class RelogioZongola(tk.Tk):
 
         # Propagar para abas
         for tab in [self._tab_alarms, self._tab_sw,
-                    self._tab_timers, self._tab_world]:
+            self._tab_timers, self._tab_world, self._tab_wcup]:
             try:
                 tab.refresh_theme(p)
             except Exception:
