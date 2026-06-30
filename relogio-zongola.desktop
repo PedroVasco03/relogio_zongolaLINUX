@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Relógio Zongola
+Comment=Relógio desktop com identidade africana para o Sistema Operativo Zongola
+Exec=python3 /opt/relogio-zongola/main.py
+Icon=clock
+Terminal=false
+Categories=Utility;Clock;
+Keywords=relógio;alarme;cronómetro;temporizador;angola;zongola;
+StartupNotify=true
